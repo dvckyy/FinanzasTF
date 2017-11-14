@@ -1,0 +1,122 @@
+﻿@model FinanzasCF.ViewModel.Flujo.ResultadosViewModel
+@section scripts{
+    
+}
+@{ 
+    
+}
+<script src="@Url.Content("~/Scripts/Chart-mod.js")"></script>
+<script src="@Url.Content("~/Content/assets/js/Chart-utils.js")"></script>
+<style>
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+
+<h1 class="page-header">Resultados del Flujo de Caja Familiar</h1>
+<form action="@Url.Action("Resultados")" method="post">
+    <div class="form-group">
+        <h4>Año: </h4>
+        <select class="form-control" name="Anio">
+            @{
+                for (int i = 2017; i > 2013; --i)
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        </select>
+        <br>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <hr />
+    </div>
+</form>
+<div style="width: 100%;">
+    <canvas id="canvas"></canvas>
+</div>
+<br>
+<script>
+    var MONTHS = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Setiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        var config = {
+            type: 'line',
+            data: {
+                labels: MONTHS,
+                datasets: [
+                {
+                    label: "Resultado ",
+                    fill: false,
+                    borderColor: window.chartColors.green,
+                    backgroundColor: window.chartColors.green,
+                    data: eval('[@string.Join(", ", Model.listFlujosResult.ToArray())]')
+                },  {
+                    label: "Ingreso ",
+                    fill: false,
+                    borderColor: window.chartColors.blue,
+                    backgroundColor: window.chartColors.blue,
+                    data: eval('[@string.Join(", ", Model.listFlujosIngreso.ToArray())]')
+                }, {
+                    label: "Egreso ",
+                    fill: false,
+                    borderColor: window.chartColors.red,
+                    backgroundColor: window.chartColors.red,
+                    data: eval('[@string.Join(", ", Model.listFlujosEgreso.ToArray())]')
+                }
+                ]
+            },
+            options: {
+                title:{
+                    display:true,
+                    text: 'Flujo del año @(Model.Anio)'
+                },
+                animation: {
+                    duration: 2000,
+                    onProgress: function(animation) {
+                    },
+                    onComplete: function(animation) {
+                        window.setTimeout(function() {
+                        }, 2000);
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config);
+        };
+</script>
+<hr />
+<div class="table">
+    <h4>Tabla de Resultados</h4>
+    <table class="table table-striped">
+        <tbody>
+            @{
+                Decimal? egresos = Model.listFlujosEgreso.Sum();
+                Decimal? ingresos = Model.listFlujosIngreso.Sum();
+                Decimal? resultado = egresos.Value+ingresos.Value;
+                Decimal? tcea = resultado.Value * (decimal)0.4;               
+                <tr>
+                    <td>Ingreso Anual</td>
+                    <td>@ingresos.Value</td>
+                </tr>
+                <tr>
+                    <td>Egreso Anual</td>
+                    <td>@egresos.Value</td>
+                </tr>
+                <tr>
+                    <td>Flujo Anual</td>
+                    <td>@resultado</td>
+                </tr>
+                <tr>
+                    <td>TCEA</td>
+                    <td>@(tcea.Value.ToString("N7")) %</td>
+                </tr>
+            }            
+        </tbody>
+    </table>
+</div>
+
+<br />
+

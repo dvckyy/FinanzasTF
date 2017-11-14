@@ -1,0 +1,105 @@
+﻿@model FinanzasCF.ViewModel.Flujo.ListViewModel
+<h1 class="page-header">Flujo de Caja Familiar</h1>
+<form action="@Url.Action("Listado")" method="post">
+    <div class="form-group">
+        <h4>Año: </h4>
+        <select class="form-control" name="Anio">
+            @{
+                for (int i = 2017; i > 2013; --i)
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        </select>
+        <h4>Mes: </h4>
+        <select class="form-control" name="Mes">
+            @{
+                int _cMes=1;
+                foreach (var mes in Enum.GetValues(typeof(FinanzasCF.Helpers.HelpersMain.MESES)))
+                {                    
+                    <option value="@_cMes">@mes.ToString()</option>
+                    ++_cMes;
+                }
+            }
+        </select>
+        <br>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <hr />
+    </div>
+</form>
+<a class="btn btn-primary" href="@Url.Action("AddEdit", new { IDFlujo = 0 })">+ Agregar Flujo</a>
+<br />
+<div class="table">
+    <h4>Ingresos</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Subtotal</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                Decimal? ingresos = 0;
+                foreach (var flujo in Model.listFlujosIngreso)
+                {
+                    <tr>
+                        <th>@flujo.Categoria.Nombre</th>
+                        <th class="bg-success">+@flujo.Monto</th>
+                        <th><a class="btn btn-primary btn-block" href="@Url.Action("AddEdit", new { IDFlujo = flujo.IDFlujo })">Editar</a></th>
+                        <th><a class="btn btn-primary btn-block" href="@Url.Action("Eliminar", new { IDFlujo = flujo.IDFlujo })">Eliminar</a></th>                    
+                    </tr>
+                    ingresos += flujo.Monto;
+                }
+                <tr>
+                    <th>Total</th>
+                    <th class="bg-success">+@ingresos</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<hr />
+<div class="table">
+    <h4>Egresos</h4>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Categoria</th>
+                <th>Subtotal</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                Decimal? egresos = 0;
+                foreach (var flujo in Model.listFlujosEgreso)
+                {
+                    <tr>
+                        <th>@flujo.Categoria.Nombre</th>
+                        <th class="bg-danger">@flujo.Monto</th>
+                        <th><a class="btn btn-primary btn-block" href="@Url.Action("AddEdit", new { IDFlujo = flujo.IDFlujo })">Editar</a></th>
+                        <th><a class="btn btn-primary btn-block" href="@Url.Action("Eliminar", new { IDFlujo = flujo.IDFlujo })">Eliminar</a></th>
+                    </tr>
+                    egresos += flujo.Monto;
+                }
+                <tr>
+                    <th>Total</th>
+                    <th class="bg-danger">@egresos</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@{ 
+    String classResult = "bg-success";
+    if (ingresos + egresos < 0) {
+        classResult = "bg-danger";
+    } 
+}
+<h3 class="@(classResult) col-md-2">Balance:</h3>
+<h3 class="@(classResult) col-md-10">@(ingresos+egresos)</h3>
+

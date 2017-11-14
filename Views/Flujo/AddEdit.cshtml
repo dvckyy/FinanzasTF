@@ -1,0 +1,66 @@
+﻿@model FinanzasCF.ViewModel.Flujo.AddEditViewModel
+@section scripts{
+<script src="@Url.Content("~/Content/assets/js/moment.js")"></script>
+<link href="@Url.Content("~/Content/assets/css/bootstrap-datetimepicker.css")" rel="stylesheet">
+<script src="@Url.Content("~/Content/assets/js/bootstrap-datetimepicker.min.js")"></script> 
+
+<script type="text/javascript">
+		$(function () {
+	    	$('.datetime').datetimepicker({
+	    		format: 'DD/MM/YYYY',
+	    		locale : 'es'
+	    	});
+	    });
+</script> 
+}
+<h1 class="page-header">Editar Agregar Flujo</h1>
+<form action="@Url.Action("AddEdit")" method="post">
+    
+    @Html.HiddenFor(model => model.IDFlujo)
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.FlujoFecha, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(model => model.FlujoFecha, new { @class = "form-control datetime" } )
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IDPersona, "IDPersona", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.DropDownListFor(x=>x.IDPersona, new SelectList(Model.listPersonas,"IDPersona","Nombre"),new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Categoria:", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.DropDownListFor(x => x.IDCategoria, new SelectList(Model.listCategoriaEgreso, "IDCategoria", "Nombre"), new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.Label("Categoria:", new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.DropDownList("IDCat", new SelectList(Model.listCategoriaIngreso, "IDCategoria", "Nombre"), new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Monto, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(model => model.Monto, new { @class = "form-control" } )
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Descripcion, new { @class = "control-label col-sm-2" })
+        <div class="col-sm-10">
+            @Html.TextAreaFor(model => model.Descripcion, new { @class = "form-control" } )
+        </div>
+    </div>      
+    <br>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <hr />    
+</form>
+
